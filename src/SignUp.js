@@ -2,8 +2,13 @@ import React, {useState} from 'react'
 import './css/App.css'
 import * as Yup from "yup";
 import { useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import Header from './Header';
+
 
 var SignUp = () => {
+	const navigate = useNavigate(); // Import useNavigate hook for navigation
+
 	const [formData, setFormData] = useState({
         name: '',
         roll_number: '',
@@ -14,9 +19,9 @@ var SignUp = () => {
 
 	const SignUpSchema = Yup.object().shape({
 		name: Yup.string().required("Name is required").min(2, "Name is too short").max(100, "Name is too long"),
-		roll_number: Yup.number().required("Roll number is required").min(1, "Invalid roll number").max(100, 						"Invalid roll number"),
+		roll_number: Yup.number().required("Roll number is required").min(1, "Invalid roll number").max(100,"Invalid roll number"),
 		email: Yup.string().email("Invalid email").required("Email is required"),
-		current_standard: Yup.number().required("Current standard is required").min(1, "Invalid 										standard").max(12, "Invalid standard"),
+		current_standard: Yup.number().required("Current standard is required").min(1, "Invalid standard").max(12, "Invalid standard"),
 	});
 	
 	const [currentStandard, setCurrentStandard] = useState('');
@@ -31,10 +36,13 @@ var SignUp = () => {
 		},
 		validationSchema: SignUpSchema,
 		onSubmit: values => {
-			setFormData(values);
+			navigate('/display-data', {
+				state: { values },
+			  });
+			// setFormData(values);
 			// setCurrentStandard(values.roll_number);
 			// const formData = values;
-			console.log(formData, values);
+			// console.log(formData, values);
 			// let ref1 = Firebase.database().ref().child('users').push()
 			// ref1.set(values)
 		},
@@ -79,6 +87,9 @@ var SignUp = () => {
         return previousStandardsFields;
     };
 	return (
+		<>
+
+		<Header/>
 		<div className="container mt-4">
 			<form className="row g-3" onSubmit={formik.handleSubmit}>
 				<div className="col-md-6">
@@ -108,6 +119,7 @@ var SignUp = () => {
 				</div>
 			</form>
 		</div>
+		</>
 	)
 }
 
