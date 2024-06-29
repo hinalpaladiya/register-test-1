@@ -1,5 +1,4 @@
 import logo from './logo.svg';
-import Header from './Header';
 import SignUp from './SignUp';
 import DisplayData from './DisplayData';
 import 'bootstrap/dist/css/bootstrap.min.css'
