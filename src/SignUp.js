@@ -33,7 +33,7 @@ const SignUp = () => {
         },
         validationSchema: SignUpSchema,
         onSubmit: values => {
-            axios.post('https://register-test-1-default-rtdb.firebaseio.com/')
+            axios.post('https://register-test-1-default-rtdb.firebaseio.com/users.json', values)
             .then(res => {
                 console.log(res, 'res');
             });
