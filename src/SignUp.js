@@ -4,8 +4,10 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
+import PreviousStandardsFields from './PreviousStandardsFields'; // 
+import axios from 'axios';
 
-const SignUpSchema = Yup.object().shape({
+var SignUpSchema = Yup.object().shape({
     name: Yup.string().required('Name is required').min(2, 'Name is too short').max(100, 'Name is too long'),
     rollNumber: Yup.number().required('Roll number is required').min(1, 'Invalid roll number').max(100, 'Invalid roll number'),
     email: Yup.string().email('Invalid email').required('Email is required'),
@@ -19,77 +21,36 @@ const SignUpSchema = Yup.object().shape({
 });
 
 const SignUp = () => {
-	const navigate = useNavigate();
+    const navigate = useNavigate();
 
-	const formik = useFormik({
-		initialValues: {
-			name: '',
-			rollNumber: '',
-			email: '',
-			currentStandard: '',
-			previousStandards: [],
-		},
-		validationSchema: SignUpSchema,
-		onSubmit: values => {
-			navigate('/display-data', {
-				state: { values },
-			});
-		},
-	});
+    const formik = useFormik({
+        initialValues: {
+            name: '',
+            rollNumber: '',
+            email: '',
+            currentStandard: '',
+            previousStandards: [],
+        },
+        validationSchema: SignUpSchema,
+        onSubmit: values => {
+            axios.post('https://register-test-1-default-rtdb.firebaseio.com/')
+            .then(res => {
+                console.log(res, 'res');
+            });
+            navigate('/display-data', {
+                state: { values },
+            });
+        },
+    });
 
-	useEffect(() => {
-		formik.setFieldValue('previousStandards', []);
-	}, [formik.values.currentStandard]);
+    useEffect(() => {
+        formik.setFieldValue('previousStandards', []);
+        console.log('callesdfdsfsdd');
+        formik.validateForm(); 
+        console.log('called');
+    }, [formik.values.currentStandard]);
 
-	const renderPreviousStandardsFields = () => {
-        const currentStandard = parseInt(formik.values.currentStandard);
-        const previousStandardsFields = [];
-
-        for (let i = 1; i < currentStandard; i++) {
-            previousStandardsFields.push(
-                <div key={i} className="row mt-3">
-                    <div className="col-md-6">
-                        <label htmlFor={`previousStandards[${i - 1}].remark`} className="form-label">{`Standard ${i}: Remark`}</label>
-                        <input
-                            type="text"
-                            id={`previousStandards[${i - 1}].remark`}
-                            name={`previousStandards[${i - 1}].remark`}
-                            className={`form-control ${formik.errors.previousStandards?.[i - 1]?.remark ? 'is-invalid' : ''}`}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.previousStandards[i - 1]?.remark || ''}
-                        />
-                        {formik.touched.previousStandards && formik.errors.previousStandards?.[i - 1]?.remark && (
-                            <div className="invalid-feedback">
-                                {formik.errors.previousStandards[i - 1].remark}
-                            </div>
-                        )}
-                    </div>
-                    <div className="col-md-6">
-                        <label htmlFor={`previousStandards[${i - 1}].percentage`} className="form-label">{`Standard ${i}: Percentage`}</label>
-                        <input
-                            type="text"
-                            id={`previousStandards[${i - 1}].percentage`}
-                            name={`previousStandards[${i - 1}].percentage`}
-                            className={`form-control ${formik.errors.previousStandards?.[i - 1]?.percentage ? 'is-invalid' : ''}`}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.previousStandards[i - 1]?.percentage || ''}
-                        />
-                        {formik.touched.previousStandards && formik.errors.previousStandards?.[i - 1]?.percentage && (
-                            <div className="invalid-feedback">
-                                {formik.errors.previousStandards[i - 1].percentage}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
-        }
-
-        return previousStandardsFields;
-    };
-
-	return (
+    return (
         <>
             <Header />
             <div className="container mt-4">
@@ -148,7 +109,7 @@ const SignUp = () => {
                     <div className="col-md-12">
                         <label htmlFor="currentStandard" className="form-label">Current Standard</label>
                         <input
-                            type="text"
+                            type="number"
                             id="currentStandard"
                             name="currentStandard"
                             className={`form-control ${formik.touched.currentStandard && formik.errors.currentStandard ? 'is-invalid' : ''}`}
@@ -162,7 +123,7 @@ const SignUp = () => {
                             </div>
                         )}
                     </div>
-                    {renderPreviousStandardsFields()}
+                    <PreviousStandardsFields formik={formik} />
                     <div className="col-12">
                         <button type="submit" className="btn btn-primary">Sign up</button>
                     </div>
