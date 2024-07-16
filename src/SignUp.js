@@ -5,6 +5,7 @@ import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import PreviousStandardsFields from './PreviousStandardsFields'; // 
+import axios from 'axios';
 
 var SignUpSchema = Yup.object().shape({
     name: Yup.string().required('Name is required').min(2, 'Name is too short').max(100, 'Name is too long'),
@@ -32,6 +33,10 @@ const SignUp = () => {
         },
         validationSchema: SignUpSchema,
         onSubmit: values => {
+            axios.post('https://register-test-1-default-rtdb.firebaseio.com/')
+            .then(res => {
+                console.log(res, 'res');
+            });
             navigate('/display-data', {
                 state: { values },
             });
@@ -40,6 +45,9 @@ const SignUp = () => {
 
     useEffect(() => {
         formik.setFieldValue('previousStandards', []);
+        console.log('callesdfdsfsdd');
+        formik.validateForm(); 
+        console.log('called');
     }, [formik.values.currentStandard]);
 
     return (
